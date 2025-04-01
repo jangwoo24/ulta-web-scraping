@@ -1,9 +1,11 @@
 from bs4 import BeautifulSoup
 import requests
-from selenium import webdriver
+# from selenium import webdriver
+import json
 
 baseShampooURL = "https://www.ulta.com/shop/hair/shampoo-conditioner/shampoo"
-# baseConditionerURL = "https://www.ulta.com/shop/hair/shampoo-conditioner/conditioner"
+baseConditionerURL = "https://www.ulta.com/shop/hair/shampoo-conditioner/conditioner"
+# baseOilURL = "https://www.ulta.com/shop/hair/treatment/oils-serums"
 pageURL = "?page="
 
 def scrapeProductPage():
@@ -41,13 +43,23 @@ def scrapeProductsList(baseURL, pageN = 1):
 				productURLs.append(a['href'])
 	return productURLs
 
-def scrapeUltaShampoos():
+def scrapeUltaURLs():
 	allShampooURLs = []
+	allConditionerURLs = []
 	for i in range(1,12):
 		tempList = scrapeProductsList(baseShampooURL, pageN=i)
-		print(tempList)
-		allProductURLs += tempList
-	print(allShampooURLs)
+		allShampooURLs += tempList
+	for i in range(1,12):
+		tempList = scrapeProductsList(baseConditionerURL, pageN=i)
+		allConditionerURLs += tempList
+	
+	allURLs = dict()
+	allURLs['Shampoo'] = allShampooURLs
+	allURLs['Conditioner'] = allConditionerURLs
+
+	with open('product_urls.json', 'w') as f:
+		json.dump(allURLs, f)
+	
 
 
-scrapeUltaShampoos()
+scrapeUltaURLs()

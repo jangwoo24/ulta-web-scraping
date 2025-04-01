@@ -173,5 +173,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-#Scraped Data
+#OLD Scraped Data
 *.csv
+
+#NEW Scraped Data
+*.json
