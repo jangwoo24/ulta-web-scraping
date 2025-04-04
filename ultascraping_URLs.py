@@ -11,7 +11,7 @@ pageURL = "?page="
 def scrapeProductPage():
 	return
 
-review_counts = []
+# review_counts = []
 
 def scrapeProductsList(baseURL, pageN = 1):
 	r = requests.get(baseURL + pageURL + str(pageN))
@@ -47,8 +47,9 @@ def scrapeProductsList(baseURL, pageN = 1):
 				num_reviews = num_reviews.text
 				num_reviews = re.search(r';\s*(\d+)\s*', num_reviews)
 				num_reviews = int(num_reviews.group(1))
-				review_counts.append(num_reviews)
-				productURLs.append(a['href'])
+				# review_counts.append(num_reviews)
+				if num_reviews >= 100:
+					productURLs.append(a['href'])
 	return productURLs
 
 def scrapeUltaURLs():
@@ -74,20 +75,20 @@ def scrapeUltaURLs():
 	with open('oil_urls.json', 'w') as f:
 		json.dump(allOilURLs, f)
 	
-	print("Total number of reviews, number of shampoo reviews, number of conditioner reviews, number of oil reviews: {}, {}, {}, {}".format(len(review_counts),len(allShampooURLs), len(allConditionerURLs), len(allOilURLs)))
-	poos_lt_100 = 0
-	conds_lt_100 = 0
-	oils_lt_100 = 0
-	for count in review_counts[:len(allShampooURLs)]:
-		if count < 100:
-			poos_lt_100 += 1
-	for count in review_counts[len(allShampooURLs):-len(allOilURLs)]:
-		if count < 100:
-			conds_lt_100 += 1
-	for count in review_counts[-len(allOilURLs):]:
-		if count < 100:
-			oils_lt_100 += 1
-	print("Number of shampoos, conditioners, oils with fewer than 100 reviews: {}, {}, {}".format(poos_lt_100, conds_lt_100, oils_lt_100))
+	# print("Total number of reviews, number of shampoo reviews, number of conditioner reviews, number of oil reviews: {}, {}, {}, {}".format(len(review_counts),len(allShampooURLs), len(allConditionerURLs), len(allOilURLs)))
+	# poos_lt_100 = 0
+	# conds_lt_100 = 0
+	# oils_lt_100 = 0
+	# for count in review_counts[:len(allShampooURLs)]:
+	# 	if count < 100:
+	# 		poos_lt_100 += 1
+	# for count in review_counts[len(allShampooURLs):-len(allOilURLs)]:
+	# 	if count < 100:
+	# 		conds_lt_100 += 1
+	# for count in review_counts[-len(allOilURLs):]:
+	# 	if count < 100:
+	# 		oils_lt_100 += 1
+	# print("Number of shampoos, conditioners, oils with fewer than 100 reviews: {}, {}, {}".format(poos_lt_100, conds_lt_100, oils_lt_100))
 
 
 	# allURLs = dict()
