@@ -27,7 +27,7 @@ def scrapeReviewsSingleProduct(page_id):
     # /reviews?paging.from=0&paging.size=25&sort=Oldest&image_only=false&page_locale=en_US
     # &native_only=false&_noconfig=true&apikey=daa0f241-c242-4483-afb7-4449942d1a2b
     reviews_dict = requests.get(url=baseDbUrl+preUrl+page_id+postUrl+postPostUrl).json()
-    while 'next_page_url' in reviews_dict['paging']:
+    while 'paging' in reviews_dict and'next_page_url' in reviews_dict['paging']:
         print(baseDbUrl+reviews_dict['paging']['next_page_url']+postPostUrl)
         tempList = reviews_dict['results'][0]['reviews']
         reviews_list += tempList
@@ -51,7 +51,8 @@ def scrapeAllProductsFromFile(filename):
     with open (filename, 'r') as f:
         urls_list = json.load(f)
     for productURL in urls_list:
-        page_id = re.search(r'(pimprod\d+|xlsImpprod\d+)', productURL).group(1)
+        # page_id = re.search(r'(pimprod\d+|xlsImpprod\d+)', productURL).group(1)
+        page_id = re.search(r'-([a-zA-Z]+\d+)', productURL).group(1)
         all_reviews += scrapeReviewsSingleProduct(page_id=page_id)
     return all_reviews
 
