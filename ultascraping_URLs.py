@@ -8,8 +8,6 @@ baseConditionerURL = "https://www.ulta.com/shop/hair/shampoo-conditioner/conditi
 baseOilURL = "https://www.ulta.com/shop/hair/treatment/oils-serums"
 pageURL = "?page="
 
-def scrapeProductPage():
-	return
 
 # review_counts = []
 

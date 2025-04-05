@@ -1,7 +1,4 @@
-from bs4 import BeautifulSoup
 import requests
-# from selenium import webdriver
-# from selenium.webdriver.support.ui import Select
 import time
 import re
 import json
@@ -12,11 +9,6 @@ preUrl      = "/m/6406/l/en_US/product/"
 postUrl     = "/reviews?paging.from=0&paging.size=25&sort=Oldest&image_only=false&page_locale=en_US"
 postPostUrl = "&native_only=false&_noconfig=true&apikey=daa0f241-c242-4483-afb7-4449942d1a2b"
  
-
-def scrapeProductInfo(productURL):
-    # scrape directly from productURL
-    # Product Name, Brand Name, Price ($), Size (oz), Product Details?, INGREDIENTS, productURL, imgURL?
-    return
 
 def scrapeReviewsSingleProduct(page_id):
     reviews_list = []
