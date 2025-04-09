@@ -10,44 +10,34 @@ pageURL = "?page="
 
 
 # review_counts = []
+# BAD_SUBS = ["-bar-", "-pump-", "travel-size", "thickening-therapy", "duo", "system-pimprod"]
+BAD_SUBS = ["-pump-", "travel-size", "duo", "system-pimprod"]
+# no longer scraping "size" (oz) info from products 
 
 def scrapeProductsList(baseURL, pageN = 1):
+	print(baseURL + pageURL + str(pageN))
 	r = requests.get(baseURL + pageURL + str(pageN))
-	print(r.status_code)
+	# print(r.status_code)
 
 	productURLs = []
-
-	# file = open('ulta_shampoos.csv', 'w', newline='')
-	# writer = csv.writer(file)
-	# csvheaders = ['Brand', 'Name', 'Review Content', 'Price', 'URL', 'ImgURL']
-	# writer.writerow(csvheaders)
-
-
-	# chrome_options = webdriver.ChromeOptions()
-	# chrome_options.add_argument("--headless=new") #can remove =new for old headless (pre-109 chrome) mode
-	# driver = webdriver.Chrome(options=chrome_options)
-	# driver.get(URLname)
-
-
-	# time.sleep(0.1) #wait for images to lazy load
-
-	# html = driver.page_source
 	html = r.content
-	soupnames = BeautifulSoup(html, 'html5lib')
+	soup = BeautifulSoup(html, 'html5lib')
 
-	namecol = soupnames.find('ul', attrs={'data-test':'products-list'})
+	namecol = soup.find('ul', attrs={'data-test':'products-list'})
 	if namecol:
 		productAs = namecol.find_all('a', attrs={'class':'pal-c-Link pal-c-Link--primary pal-c-Link--default'})
 		for a in productAs:
-			rating_div = a.find('div', attrs={'class':'ProductCard__rating'})
-			if rating_div:
-				num_reviews = rating_div.find('span', attrs={'class':'sr-only'})
-				num_reviews = num_reviews.text
-				num_reviews = re.search(r';\s*(\d+)\s*', num_reviews)
-				num_reviews = int(num_reviews.group(1))
-				# review_counts.append(num_reviews)
-				if num_reviews >= 100:
-					productURLs.append(a['href'])
+			# if "-bar-" not in a['href'] and "-pump-" not in a['href'] and "travel-size" not in a['href']:
+			if all(s not in a['href'] for s in BAD_SUBS):
+				rating_div = a.find('div', attrs={'class':'ProductCard__rating'})
+				if rating_div:
+					num_reviews = rating_div.find('span', attrs={'class':'sr-only'})
+					num_reviews = num_reviews.text
+					num_reviews = re.search(r';\s*(\d+)\s*', num_reviews)
+					num_reviews = int(num_reviews.group(1))
+					# review_counts.append(num_reviews)
+					if num_reviews >= 100:
+						productURLs.append(a['href'])
 	return productURLs
 
 def scrapeUltaURLs():

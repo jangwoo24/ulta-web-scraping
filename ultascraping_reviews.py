@@ -6,26 +6,31 @@ import json
 
 baseDbUrl   = "https://display.powerreviews.com"
 preUrl      = "/m/6406/l/en_US/product/"
-postUrl     = "/reviews?paging.from=0&paging.size=25&sort=Oldest&image_only=false&page_locale=en_US"
+postUrl     = "/reviews?paging.from=0&paging.size=25&filters=&search=&sort=Oldest&image_only=false&page_locale=en_US"
 postPostUrl = "&native_only=false&_noconfig=true&apikey=daa0f241-c242-4483-afb7-4449942d1a2b"
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+    'Connection': 'keep-alive'
+}
  
 
 def scrapeReviewsSingleProduct(page_id):
     reviews_list = []
-    # Input (Type 1):
-    # https://www.ulta.com/p/product-name-pimprod######?sku=####
-    # Turn into (Type 1):
-    # https://display.powerreviews.com/m/6406/l/en_US/product/pimprod######
-    # /reviews?paging.from=0&paging.size=25&sort=Oldest&image_only=false&page_locale=en_US
-    # &native_only=false&_noconfig=true&apikey=daa0f241-c242-4483-afb7-4449942d1a2b
-    reviews_dict = requests.get(url=baseDbUrl+preUrl+page_id+postUrl+postPostUrl).json()
+    
+    reviews_dict = requests.get(url=baseDbUrl+preUrl+page_id+postUrl+postPostUrl, headers=headers).json()
+    # print (reviews_dict.status_code)
+    # reviews_dict = reviews_dict.json()
+
     while 'paging' in reviews_dict and'next_page_url' in reviews_dict['paging']:
         print(baseDbUrl+reviews_dict['paging']['next_page_url']+postPostUrl)
         tempList = reviews_dict['results'][0]['reviews']
         reviews_list += tempList
         
-        time.sleep(0.01)
-        reviews_dict = requests.get(url=baseDbUrl+reviews_dict['paging']['next_page_url']+postPostUrl).json()
+        reviews_dict = requests.get(url=baseDbUrl+reviews_dict['paging']['next_page_url']+postPostUrl, headers=headers)
+        print(reviews_dict.status_code)
+        reviews_dict = reviews_dict.json()
+        time.sleep(0.4)
     #review parsing
     reviews_list = [
         {
@@ -46,6 +51,7 @@ def scrapeAllProductsFromFile(filename):
         # page_id = re.search(r'(pimprod\d+|xlsImpprod\d+)', productURL).group(1)
         page_id = re.search(r'-([a-zA-Z]+\d+)', productURL).group(1)
         all_reviews += scrapeReviewsSingleProduct(page_id=page_id)
+        time.sleep(0.5)
     return all_reviews
 
 
@@ -58,10 +64,10 @@ all_poo_reviews = scrapeAllProductsFromFile('shampoo_urls.json')
 with open('shampoo_reviews.json', 'w') as f:
     json.dump(all_poo_reviews, f)
 
-all_cond_reviews = scrapeAllProductsFromFile('conditioner_urls.json')
-with open('conditioner_reviews.json', 'w') as f:
-    json.dump(all_cond_reviews, f)
+# all_cond_reviews = scrapeAllProductsFromFile('conditioner_urls.json')
+# with open('conditioner_reviews.json', 'w') as f:
+#     json.dump(all_cond_reviews, f)
 
-all_oil_reviews = scrapeAllProductsFromFile('oil_urls.json')
-with open('oil_reviews.json', 'w') as f:
-    json.dump(all_oil_reviews, f)
+# all_oil_reviews = scrapeAllProductsFromFile('oil_urls.json')
+# with open('oil_reviews.json', 'w') as f:
+#     json.dump(all_oil_reviews, f)
